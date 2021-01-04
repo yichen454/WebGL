@@ -1,0 +1,42 @@
+.gameControl {
+    position : absolute;
+    width    : 200px;
+    height   : 200px;
+    left     : 50%;
+    transform: translateX(-100px);
+    bottom   : 0;
+}
+
+.joyStickOut {
+    position      : absolute;
+    pointer-events: none;
+    display       : block;
+    width         : 120px;
+    height        : 120px;
+    top           : 100px;
+    left          : 100px;
+    transform     : translate(-50%, -50%);
+}
+
+.joyStickIn {
+    position      : absolute;
+    pointer-events: none;
+    display       : block;
+    top           : 100px;
+    left          : 100px;
+    width         : 68px;
+    height        : 68px;
+    transform     : translate(-50%, -50%);
+}
+
+.circle {
+    fill  : none;
+    stroke: #fff;
+}
+
+.stl {
+    fill           : none;
+    stroke-width   : 2;
+    stroke         : #888;
+    stroke-linejoin: miter;
+}

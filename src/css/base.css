@@ -1,0 +1,203 @@
+html {
+	height: 100%;
+}
+
+body {
+	font    : 24px arial;
+	color   : black;
+	margin  : 0;
+	padding : 0;
+	width   : 100%;
+	height  : 100%;
+	overflow: hidden;
+
+	user-select        : none;
+	-webkit-user-select: none;
+	-ms-user-select    : none;
+	-moz-user-select   : none;
+
+}
+
+ul,
+li {
+	list-style-type: none;
+}
+
+.clear {
+	float: none;
+	clear: both;
+}
+
+.wrapper_viewport {
+	position: absolute;
+	z-index : 999;
+	top     : 0;
+	left    : 0;
+	width   : 100%;
+	height  : 100%;
+	overflow: hidden;
+}
+
+.overlay {
+	pointer-events: none;
+}
+
+/* 全屏背景并适配 */
+.fs {
+	width              : 100%;
+	height             : 100%;
+	position           : fixed;
+	background-repeat  : repeat;
+	background-size    : auto;
+	background-position: center;
+}
+
+#toast {
+	background       : rgba(0, 0, 0, 0.7);
+	color            : #fff;
+	font-size        : 34px;
+	line-height      : 1;
+	padding          : 20px;
+	border-radius    : 4px;
+	position         : absolute;
+	left             : 50%;
+	top              : 50%;
+	transform        : translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+	z-index          : 9999;
+}
+
+/* 中心锚点 */
+.ac {
+	position: fixed;
+	left    : 50%;
+	top     : 50%;
+}
+
+/* 居中 */
+.sc {
+	position         : fixed;
+	left             : 50%;
+	top              : 50%;
+	transform        : translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+}
+
+.sc2 {
+	position         : absolute;
+	left             : 50%;
+	top              : 50%;
+	transform        : translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+}
+
+.scl {
+	position : fixed;
+	left     : 50%;
+	top      : 50%;
+	transform: translate(-50%, -50%) rotateZ(90deg);
+}
+
+.hsc {
+	position         : fixed;
+	left             : 50%;
+	transform        : translate(-50%, 0%);
+	-webkit-transform: translate(-50%, 0%);
+}
+
+.vsc {
+	position         : fixed;
+	top              : 50%;
+	transform        : translate(0%, -50%);
+	-webkit-transform: translate(0%, -50%);
+}
+
+#app {
+	position: absolute;
+	width   : 100%;
+	height  : 100%;
+	top     : 0;
+	left    : 0;
+}
+
+@keyframes fadeIn {
+	0% {
+		opacity: 0
+	}
+
+	100% {
+		opacity: 1
+	}
+}
+
+@-webkit-keyframes fadeIn {
+	0% {
+		opacity: 0
+	}
+
+	100% {
+		opacity: 1
+	}
+}
+
+@keyframes fadeOut {
+	0% {
+		opacity: 1
+	}
+
+	100% {
+		opacity: 0
+	}
+}
+
+@-webkit-keyframes fadeOut {
+	0% {
+		opacity: 1
+	}
+
+	100% {
+		opacity: 0
+	}
+}
+
+.fadeOut {
+	animation        : fadeOut .5s;
+	-webkit-animation: fadeOut .5s;
+}
+
+.fadeIn {
+	animation        : fadeIn .5s;
+	-webkit-animation: fadeIn .5s;
+}
+
+.sikai_Out {
+	animation: fadeOut 1s .5s both;
+}
+
+.fanye_in {
+	animation: fadeIn .5s both;
+}
+
+.c3d {
+	position: absolute;
+	width   : 100%;
+	height  : 100%;
+	left    : 0;
+	overflow: hidden;
+}
+
+.cui {
+	display                 : block;
+	position                : relative;
+	width                   : 750px;
+	height                  : auto;
+	margin                  : 0;
+	word-wrap               : break-word;
+	word-break              : break-all;
+	transform-origin        : 0 0;
+	-webkit-transform-origin: 0 0;
+}
+
+.test_border {
+	border: aqua solid 2px;
+}
