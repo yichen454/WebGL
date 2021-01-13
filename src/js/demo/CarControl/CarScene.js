@@ -1,7 +1,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
+import BaseScene from '../../graphics/BaseScene'
 import EventBus from '../../eventBus'
 
 var root;
@@ -31,7 +32,7 @@ var carOrientation = 0;
 var wheelDiameter = 1;
 var length = 1;
 
-export default class CarSence {
+export default class CarScene extends BaseScene{
 
     loaded = false;
     touchControls = {
@@ -53,28 +54,18 @@ export default class CarSence {
     bodyRunAxis = 'x'
 
 
-    constructor(params) {
+    constructor(porps) {
+        super(porps)
         document.title = 'webgl车辆简单渲染及控制系统';
         if (window['_czc']) {
-            _czc.push(["_trackEvent", 'webgl', '进入', 'CarSence'])
+            _czc.push(["_trackEvent", 'webgl', '进入', 'CarScene'])
         }
-        this.renderer = params.renderer;
-        this.renderSize = params.renderSize;
-        this.isHidden = false;
-
+       
         maxSpeedReverse = -this.maxSpeed * 0.25;
         accelerationReverse = this.acceleration * 0.5;
         deceleration = this.acceleration * 2;
 
         EventBus.addListener(EventBus.Event.joystick_event, this.controlEvent);
-
-        this._SetCamera();
-        this._InitPass();
-        this._InitPhysics();
-        this._InitBackGround();
-        this._InitLight();
-        this._InitGameObject();
-        this._InitHelper();
     }
 
     controlEvent = (touchControls) => {
@@ -223,20 +214,9 @@ export default class CarSence {
         root.add(steeringWheel);
     }
 
-    resize(width, height) {
-        this.camera.aspect = width / height;
-        this.camera.updateProjectionMatrix();
-    }
-
     dispose() {
+        super.dispose();
         EventBus.removeListener(EventBus.Event.joystick_event, this.controlEvent);
-        this.scene.traverse((child) => {
-            if (child.isMesh) {
-                child.geometry && child.geometry.dispose();
-                child.material && child.material.dispose();
-            }
-        })
-        this.scene.clear();
         this.controls.dispose();
     }
 

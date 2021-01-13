@@ -8,30 +8,22 @@ import { AddPass } from '../../pass/AddPass'
 import { geoMercator } from 'd3-geo'
 import GUIThree from '../GUIThree'
 
+import BaseScene from '../../graphics/BaseScene'
+
 let materials = {};
 let darkMaterial = new THREE.MeshBasicMaterial({
     color: 0x000000,
 });
 let darkColor = new THREE.Color(0x000000);
 
-export default class GeoSence {
+export default class GeoScene extends BaseScene {
 
-    constructor(params) {
+    constructor(porps) {
+        super(porps);
         document.title = 'webgl-Threejs-geoJson演示';
         if (window['_czc']) {
-            _czc.push(["_trackEvent", 'webgl', '进入', 'GeoSence'])
+            _czc.push(["_trackEvent", 'webgl', '进入', 'GeoScene'])
         }
-        this.renderer = params.renderer;
-        this.renderSize = params.renderSize;
-        this.isHidden = false;
-
-        this._SetCamera();
-        this._InitPass();
-        this._InitPhysics();
-        this._InitBackGround();
-        this._InitLight();
-        this._InitGameObject();
-        this._InitHelper();
     }
 
     hide() {
@@ -226,8 +218,7 @@ export default class GeoSence {
     }
 
     resize(width, height) {
-        this.camera.aspect = width / height;
-        this.camera.updateProjectionMatrix();
+        super.resize(width, height);
 
         this.bloomPass.setSize(width / 2, height / 2);
         this.bloomComposer.setSize(width, height);
@@ -235,13 +226,7 @@ export default class GeoSence {
     }
 
     dispose() {
-        this.scene.traverse((child) => {
-            if (child.isMesh) {
-                child.geometry && child.geometry.dispose();
-                child.material && child.material.dispose();
-            }
-        })
-        this.scene.clear();
+        super.dispose();
         this.controls.dispose();
     }
 

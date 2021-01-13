@@ -1,11 +1,13 @@
 import React from 'react'
 import Container3d from './container_3d'
 import JoyStick from './joystick'
+import SplitIcon from './splitIcon'
 
 class App extends React.PureComponent {
 
     state = {
-        needJoystick: false
+        needJoystick: false,
+        needSplitIcon: false
     }
 
     constructor(props) {
@@ -19,12 +21,16 @@ class App extends React.PureComponent {
     choseSence() {
         let query = _.getQueryStringByName('sence')
         switch (query) {
-            case 'carSence':
+            case 'carScene':
                 this.setState({
                     needJoystick: true
                 })
                 break;
-
+            case 'beautyScene':
+                this.setState({
+                    needSplitIcon: true
+                })
+                break;
             default:
                 break;
         }
@@ -35,6 +41,7 @@ class App extends React.PureComponent {
             <div className="wrapper_viewport" style={{ backgroundColor: "gray" }}>
                 <Container3d />
                 {this.state.needJoystick ? <JoyStick /> : ""}
+                {this.state.needSplitIcon ? <SplitIcon /> : ""}
             </div>
         )
     }

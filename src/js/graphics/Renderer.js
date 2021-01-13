@@ -1,8 +1,9 @@
 import * as THREE from 'three'
 import Stats from 'three/examples/jsm/libs/stats.module.js'
 
-import CarSence from '../demo/CarControl/CarSence'
-import GeoSence from '../demo/GeoJson/GeoSence'
+import CarScene from '../demo/CarControl/CarScene'
+import GeoScene from '../demo/GeoJson/GeoScene'
+import BeautyScene from '../demo/BeautyMakeup/BeautyScene'
 
 let renderer,
     clock = new THREE.Clock(true),
@@ -34,18 +35,25 @@ class Renderer {
         let query = _.getQueryStringByName('sence')
         switch (query) {
             case 'carSence':
-                sences["carSence"] = new CarSence({
+            case 'carScene':
+                sences["carScene"] = new CarScene({
                     renderer: renderer,
                     renderSize: renderSize
                 })
                 break;
             case 'geoSence':
-                sences["geoSence"] = new GeoSence({
+            case 'geoScene':
+                sences["geoScene"] = new GeoScene({
                     renderer: renderer,
                     renderSize: renderSize
                 })
                 break;
-
+            case 'beautyScene':
+                sences["beautyScene"] = new BeautyScene({
+                    renderer: renderer,
+                    renderSize: renderSize
+                })
+                break;
             default:
                 break;
         }
@@ -69,12 +77,14 @@ class Renderer {
         renderer.outputEncoding = THREE.sRGBEncoding;
 
         this.container.appendChild(renderer.domElement);
-        //this.container.appendChild(stats.dom);
-
-        this._Render();
+        this.container.appendChild(stats.dom);
+        renderer.setAnimationLoop(this._Render.bind(this));
     }
 
     _Render() {
+        if (destroyRender) {
+            return;
+        }
         if (!stopRender) {
             let delta = clock.getDelta();
             stats.update();
@@ -85,17 +95,13 @@ class Renderer {
                 }
             }
         }
-        if (!destroyRender)
-            requestAnimationFrame(this._Render.bind(this));
     }
 
     onPause = () => {
-        console.log("onPause stopRender");
         stopRender = true;
     }
 
     onResume = () => {
-        console.log("onResume stopRender");
         stopRender = false;
     }
 
