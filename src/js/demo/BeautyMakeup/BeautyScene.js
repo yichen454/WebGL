@@ -22,7 +22,7 @@ export default class BeautyScene extends BaseScene {
 
     constructor(porps) {
         super(porps);
-        document.title = '动态美妆-口红';
+        document.title = 'WebGL美妆-口红';
         if (window['_czc']) {
             _czc.push(["_trackEvent", 'webgl', '进入', 'BeautyScene'])
         }
