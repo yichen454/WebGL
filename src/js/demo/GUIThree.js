@@ -6,20 +6,11 @@ import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass'
 
 let datGui = null;
 let isAdd = false;
-export default class GUIThree {
+class GUIThree {
 
-    constructor(target, name = target.type) {
-        this.name = name
+    constructor() {
         if (!datGui) {
             datGui = new GUI();
-        }
-
-        if (target instanceof THREE.Object3D) {
-
-        } else if (target instanceof THREE.Material) {
-            this.inMaterial(target);
-        } else if (target instanceof Pass) {
-            this.inPass(target);
         }
 
         if (!isAdd) {
@@ -28,6 +19,21 @@ export default class GUIThree {
             datGui.domElement.style.zIndex = 20000;
             document.body.appendChild(datGui.domElement);
             isAdd = true;
+        }
+    }
+
+    getGUI() {
+        return datGui;
+    }
+
+    setTarget(target, name = target.type) {
+        this.name = name
+        if (target instanceof THREE.Object3D) {
+
+        } else if (target instanceof THREE.Material) {
+            this.inMaterial(target);
+        } else if (target instanceof Pass) {
+            this.inPass(target);
         }
     }
 
@@ -54,7 +60,7 @@ export default class GUIThree {
 
         folder.add(mat, 'side', {
             'FrontSide': THREE.FrontSide,
-            'BackSide': THREE.BackSide, 
+            'BackSide': THREE.BackSide,
             'DoubleSide': THREE.DoubleSide
         }).onChange((val) => {
             mat.side = Number(val);
@@ -146,3 +152,5 @@ export default class GUIThree {
         }
     }
 }
+
+export default new GUIThree();

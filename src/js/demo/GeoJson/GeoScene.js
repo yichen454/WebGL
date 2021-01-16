@@ -54,7 +54,7 @@ export default class GeoScene extends BaseScene {
         const height = this.renderSize.h;
 
         const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 4, 1, 0.1);
-        new GUIThree(bloomPass, 'bloomPass');
+        GUIThree.setTarget(bloomPass, 'bloomPass');
 
         const bloomComposer = new EffectComposer(this.renderer);
         bloomComposer.renderToScreen = false;
@@ -130,14 +130,14 @@ export default class GeoScene extends BaseScene {
             side: THREE.DoubleSide,
             depthWrite: true
         });
-        new GUIThree(material_front, 'material_front');
+        GUIThree.setTarget(material_front, 'material_front');
         const material_side = new THREE.MeshPhysicalMaterial({
             color: 0x172d5f,
             envMapIntensity: 0.4,
             emissive: 0x0c1931,
             side: THREE.DoubleSide
         });
-        new GUIThree(material_side, 'material_side');
+        GUIThree.setTarget(material_side, 'material_side');
 
         const lineMaterial = new THREE.LineBasicMaterial({
             color: 'white',

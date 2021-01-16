@@ -4,7 +4,16 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import BaseScene from '../../graphics/BaseScene'
 import EventBus from '../../eventBus'
 
-import { getRect } from './utils'
+import MouthEntity from './mouthEntity'
+
+import {
+    getRect,
+    screenPointToThreeCoords,
+    imgPointToScreenPoint
+} from './utils'
+
+import face1 from './face/face1.jpg'
+import data_face1 from './face/data_face1.json'
 
 export default class BeautyScene extends BaseScene {
 
@@ -42,30 +51,79 @@ export default class BeautyScene extends BaseScene {
 
     _InitGameObject() {
         let _this = this;
-
         let img = new Image();
-        img.src = './textures/face/face1.jpg';
+        img.src = face1;
         img.onload = () => {
-            let rect = getRect(_this.camera);
+
             _this.imgParams.width = img.width;
             _this.imgParams.height = img.height;
-            let radio = img.width / img.height;
-            let pw = rect.y * radio;
-            let ph = rect.y
 
-            var pg = new THREE.PlaneGeometry(pw, ph)
+            const {
+                planeWidth,
+                planeHeight,
+                offsetX,
+                offsetY,
+                scale
+            } = _this.getPlaneSize(getRect(_this.camera), img.width, img.height);
+
+            var pg = new THREE.PlaneGeometry(planeWidth, planeHeight)
             let tex = new THREE.Texture();
             tex.encoding = THREE.sRGBEncoding;
             tex.image = img;
             tex.needsUpdate = true;
+            _this.faceTexture = tex;
             var pm = new THREE.MeshBasicMaterial({ map: tex })
             _this.plane = new THREE.Mesh(pg, pm)
             _this.scene.add(_this.plane);
-            var pm2 = new THREE.MeshBasicMaterial({ color: 0xff0000, map: tex })
+            var pm2 = new THREE.MeshBasicMaterial({ map: tex })
             _this.plane2 = new THREE.Mesh(pg, pm2)
             _this.sceneRight.add(_this.plane2);
 
+            var geometry = new THREE.Geometry();
+            var pointMaterial = new THREE.PointsMaterial({
+                color: 0x000000,
+                size: .1
+            });
+            let landmark = data_face1.faces[0].landmark;
+            let landmarkThree = {}
+            for (const key in landmark) {
+                if (Object.hasOwnProperty.call(landmark, key)) {
+                    const element = landmark[key];
+                    var pos = imgPointToScreenPoint(element.x, element.y, offsetX, offsetY, scale);
+                    var vec = screenPointToThreeCoords(pos.x / _this.renderSize.w * 2 - 1, 1 - pos.y / _this.renderSize.h * 2, _this.camera, .1);
+                    geometry.vertices.push(vec);
+                    landmarkThree[key] = vec;
+                }
+            }
+            let mouthEntity = new MouthEntity({
+                texture: _this.faceTexture,
+                imgParams: _this.imgParams,
+                parent: _this.plane2,
+                landmark: landmark,
+                landmarkThree: landmarkThree
+            })
+            var points = new THREE.Points(geometry, pointMaterial);
+            _this.plane.add(points.clone());
         }
+    }
+
+    getPlaneSize(rect, imgWidth, imgHeight) {
+        let radio = imgWidth / imgHeight;
+        let pw, ph, diffX, diffY, scale;
+        if (this.renderSize.w / this.renderSize.h > radio) {
+            pw = rect.y * radio;
+            ph = rect.y
+            diffX = (this.renderSize.w - this.renderSize.h / imgHeight * imgWidth) / 2;
+            diffY = 0;
+            scale = this.renderSize.h / imgHeight;
+        } else {
+            pw = rect.x
+            ph = rect.x / radio;
+            diffX = 0;
+            diffY = (this.renderSize.h - this.renderSize.w / imgWidth * imgHeight) / 2;
+            scale = this.renderSize.w / imgWidth;
+        }
+        return { planeWidth: pw, planeHeight: ph, offsetX: diffX, offsetY: diffY, scale: scale };
     }
 
     splicEvent = (diffX) => {
