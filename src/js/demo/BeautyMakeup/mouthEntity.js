@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 
 import { getDistance2d, createCurve2d } from './utils'
-import GUIThree from '../GUIThree'
+import GUIThree from '../../utils/GUIThree'
 
 import lip_color from './res/lip_color.png'
 
@@ -15,6 +15,7 @@ export default class MouthEntity {
         // let material = new THREE.MeshBasicMaterial({
         //     color: 0xFF0000,
         // })
+
         let material = this.createMaterial();
         let mesh = new THREE.Mesh(geometry, material)
         // new GUIThree(material);
@@ -90,8 +91,6 @@ export default class MouthEntity {
         let resultPointThree = [];
         createCurve2d(vertices_upper_landmarkThree, resultPointThree, 20, 0.6);
         createCurve2d(vertices_lower_landmarkThree, resultPointThree, 20, 0.6);
-
-
 
         // var pointGeometry = new THREE.Geometry();
         // var pointMaterial = new THREE.PointsMaterial({

@@ -6,7 +6,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
 import { AddPass } from '../../pass/AddPass'
 import { geoMercator } from 'd3-geo'
-import GUIThree from '../GUIThree'
+import GUIThree from '../../utils/GUIThree'
 
 import BaseScene from '../../graphics/BaseScene'
 

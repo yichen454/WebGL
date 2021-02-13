@@ -34,7 +34,7 @@ export default class BaseScene {
         this.isHidden = false;
     }
 
-    _SetCamera() { console.log("sssss"); }
+    _SetCamera() { }
     _InitPass() { }
     _InitPhysics() { }
     _InitBackGround() { }

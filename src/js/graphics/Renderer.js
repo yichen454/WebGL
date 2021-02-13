@@ -4,6 +4,9 @@ import Stats from 'three/examples/jsm/libs/stats.module.js'
 import CarScene from '../demo/CarControl/CarScene'
 import GeoScene from '../demo/GeoJson/GeoScene'
 import BeautyScene from '../demo/BeautyMakeup/BeautyScene'
+import FaceScene from '../demo/BeautyMakeup/FaceScene'
+import ReflectScene from '../demo/Reflect/ReflectScene'
+import LedScene from '../demo/Led/LedScene'
 
 let renderer,
     clock = new THREE.Clock(true),
@@ -32,16 +35,14 @@ class Renderer {
     }
 
     choseSence() {
-        let query = _.getQueryStringByName('sence')
+        let query = _.getQueryStringByName('scene')
         switch (query) {
-            case 'carSence':
             case 'carScene':
                 sences["carScene"] = new CarScene({
                     renderer: renderer,
                     renderSize: renderSize
                 })
                 break;
-            case 'geoSence':
             case 'geoScene':
                 sences["geoScene"] = new GeoScene({
                     renderer: renderer,
@@ -50,6 +51,24 @@ class Renderer {
                 break;
             case 'beautyScene':
                 sences["beautyScene"] = new BeautyScene({
+                    renderer: renderer,
+                    renderSize: renderSize
+                })
+                break;
+            case 'faceScene':
+                sences["faceScene"] = new FaceScene({
+                    renderer: renderer,
+                    renderSize: renderSize
+                })
+                break;
+            case 'reflectScene':
+                sences["reflectScene"] = new ReflectScene({
+                    renderer: renderer,
+                    renderSize: renderSize
+                })
+                break;
+            case 'ledScene':
+                sences["ledScene"] = new LedScene({
                     renderer: renderer,
                     renderSize: renderSize
                 })
