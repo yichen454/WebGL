@@ -7,6 +7,7 @@ import BeautyScene from '../demo/BeautyMakeup/BeautyScene'
 import FaceScene from '../demo/BeautyMakeup/FaceScene'
 import ReflectScene from '../demo/Reflect/ReflectScene'
 import LedScene from '../demo/Led/LedScene'
+import HeatmapScene from '../demo/Heatmap/HeatmapScene'
 
 let renderer,
     clock = new THREE.Clock(true),
@@ -69,6 +70,12 @@ class Renderer {
                 break;
             case 'ledScene':
                 sences["ledScene"] = new LedScene({
+                    renderer: renderer,
+                    renderSize: renderSize
+                })
+                break;
+            case 'heatmapScene':
+                sences["heatmapScene"] = new HeatmapScene({
                     renderer: renderer,
                     renderSize: renderSize
                 })

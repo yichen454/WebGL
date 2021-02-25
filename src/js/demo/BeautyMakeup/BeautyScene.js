@@ -79,22 +79,26 @@ export default class BeautyScene extends BaseScene {
             _this.plane2 = new THREE.Mesh(pg, pm2)
             _this.sceneRight.add(_this.plane2);
 
-            var geometry = new THREE.Geometry();
+            var geometry = new THREE.BufferGeometry();
             var pointMaterial = new THREE.PointsMaterial({
                 color: 0x000000,
                 size: .1
             });
             let landmark = data_face1.faces[0].landmark;
             let landmarkThree = {}
+            const vertices = [];
             for (const key in landmark) {
                 if (Object.hasOwnProperty.call(landmark, key)) {
                     const element = landmark[key];
                     var pos = imgPointToScreenPoint(element.x, element.y, offsetX, offsetY, scale);
                     var vec = screenPointToThreeCoords(pos.x / _this.renderSize.w * 2 - 1, 1 - pos.y / _this.renderSize.h * 2, _this.camera, .1);
-                    geometry.vertices.push(vec);
                     landmarkThree[key] = vec;
+                    vertices.push(vec.x, vec.y, vec.z);
                 }
             }
+
+            let ver = new Float32Array(vertices);
+            geometry.setAttribute('position', new THREE.BufferAttribute(ver, 3));
             let mouthEntity = new MouthEntity({
                 texture: _this.faceTexture,
                 imgParams: _this.imgParams,

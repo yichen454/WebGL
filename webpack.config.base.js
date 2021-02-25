@@ -57,11 +57,20 @@ module.exports = {
 			],
 		},
 		{
-			test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+			test: /\.(png|jpe?g|gif|svg|)(\?.*)?$/,
 			loader: 'url-loader',
 			options: {
 				limit: 8192, // url-loader 包含file-loader，这里不用file-loader, 小于8kb的图片base64的方式引入，大于8kb的图片以路径的方式导入
 				name: 'img/[name].[hash:8].[ext]',
+				publicPath: cdn_host
+			}
+		},
+		{
+			test: /\.(mp4|avi)(\?.*)?$/,
+			loader: 'url-loader',
+			options: {
+				limit: 8192,
+				name: 'video/[name].[hash:8].[ext]',
 				publicPath: cdn_host
 			}
 		},

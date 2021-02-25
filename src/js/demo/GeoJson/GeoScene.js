@@ -10,6 +10,7 @@ import GUIThree from '../../utils/GUIThree'
 
 import BaseScene from '../../graphics/BaseScene'
 
+
 let materials = {};
 let darkMaterial = new THREE.MeshBasicMaterial({
     color: 0x000000,
@@ -153,16 +154,20 @@ export default class GeoScene extends BaseScene {
 
                 multiPolygon.forEach(polygon => {
                     const shape = new THREE.Shape();
-                    const lineGeometry = new THREE.Geometry();
+                    const lineGeometry = new THREE.BufferGeometry();
 
+                    const vertices = [];
                     for (let i = 0; i < polygon.length; i++) {
                         const [x, y] = projection(polygon[i]);
                         if (i === 0) {
                             shape.moveTo(x, -y);
                         }
                         shape.lineTo(x, -y);
-                        lineGeometry.vertices.push(new THREE.Vector3(x, -y, thickness + 0.001));
+                        vertices.push(x, -y, thickness + thickness / 100000);
                     }
+
+                    let ver = new Float32Array(vertices);
+                    lineGeometry.setAttribute('position', new THREE.BufferAttribute(ver, 3));
 
                     const geometry = new THREE.ExtrudeGeometry(shape, {
                         depth: thickness,

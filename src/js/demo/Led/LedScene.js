@@ -1,16 +1,14 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass'
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
 import { AddPass } from '../../pass/AddPass'
 
 import BaseScene from '../../graphics/BaseScene'
 import GUIThree from '../../utils/GUIThree'
 
-import mask from './test.png'
+import vv from './res/video.mp4'
 
 let materials = {};
 let darkMaterial = new THREE.MeshBasicMaterial({
@@ -22,7 +20,7 @@ export default class LedScene extends BaseScene {
 
     constructor(porps) {
         super(porps)
-        document.title = 'webgl灯珠shader';
+        document.title = 'webgl LED屏幕';
         if (window['_czc']) {
             _czc.push(["_trackEvent", 'webgl', '进入', 'ReflectScene'])
         }
@@ -43,8 +41,34 @@ export default class LedScene extends BaseScene {
         const width = this.renderSize.w;
         const height = this.renderSize.h;
 
-        const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 4, 1, 0.1);
-        GUIThree.setTarget(bloomPass, 'bloomPass');
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 0.3, 0.4, 0);
+        GUIThree.setTarget(bloomPass, 'UnrealBloomPass');
+
+        let obc = function (shader) {
+            shader.fragmentShader = shader.fragmentShader.replace
+                ('vec2 invSize = 1.0 / texSize;					float fSigma = float(SIGMA);					float weightSum = gaussianPdf(0.0, fSigma);					vec3 diffuseSum = texture2D( colorTexture, vUv).rgb * weightSum;					for( int i = 1; i < KERNEL_RADIUS; i ++ ) {						float x = float(i);						float w = gaussianPdf(x, fSigma);						vec2 uvOffset = direction * invSize * x;						vec3 sample1 = texture2D( colorTexture, vUv + uvOffset).rgb;						vec3 sample2 = texture2D( colorTexture, vUv - uvOffset).rgb;						diffuseSum += (sample1 + sample2) * w;						weightSum += 2.0 * w;					}					gl_FragColor = vec4(diffuseSum/weightSum, 1.0);',
+                    'vec2 invSize = 1.0 / texSize;\
+                float fSigma = float(SIGMA);\
+                float weightSum = gaussianPdf(0.0, fSigma);\
+                vec3 diffuseSum = texture2D( colorTexture, vUv).rgb * weightSum;\
+                float alphaSum = 0.0;\
+                for( int i = 1; i < KERNEL_RADIUS; i ++ ) {\
+                    float x = float(i);\
+                    float w = gaussianPdf(x, fSigma);\
+                    vec2 uvOffset = direction * invSize * x;\
+                    vec4 sample1 = texture2D( colorTexture, vUv + uvOffset);\
+                    vec4 sample2 = texture2D( colorTexture, vUv - uvOffset);\
+                    diffuseSum += (sample1.rgb + sample2.rgb) * w;\
+                    weightSum += 2.0 * w;\
+                    alphaSum += (sample1.a + sample2.a) * w;\
+                }\
+                gl_FragColor = vec4(diffuseSum/weightSum, alphaSum/weightSum);');
+        }
+
+        //修正背景透明
+        bloomPass.separableBlurMaterials.forEach(mat => {
+            mat.onBeforeCompile = obc;
+        });
 
         const bloomComposer = new EffectComposer(this.renderer);
         bloomComposer.renderToScreen = false;
@@ -81,26 +105,50 @@ export default class LedScene extends BaseScene {
         var axisHelper = new THREE.AxesHelper(100);
         this.scene.add(axisHelper);
 
-        var grid = new THREE.GridHelper(200, 200, 0x000000, 0x000000);
-        this.scene.add(grid);
+        // var grid = new THREE.GridHelper(200, 200, 0x000000, 0x000000);
+        // this.scene.add(grid);
     }
 
     _InitGameObject() {
         let _this = this;
 
-        let pw = 7.2;
-        let ph = 12.8;
+        let pw = 14.4;
+        let ph = 8.8;
         var pg = new THREE.PlaneGeometry(pw, ph)
         var pm = new THREE.MeshBasicMaterial({ color: 0xffffff })
+        // var texture = new THREE.VideoTexture(video);
+
+        let video = document.createElement('video');
+        video.src = vv; // 设置视频地址
+        video.loop = true;
+        video.autoplay = "autoplay"; //要设置播放
+        document.getElementById('container_3d').appendChild(video);
+        video.style.position = "absolute";
+        video.style.left = "0";
+        video.style.top = "0";
+        video.controls = true;
+        video.style.transformOrigin = "0 0";
+        video.style.transform = "scale(0.4)";
+        video.play();
+        // video对象作为VideoTexture参数创建纹理对象
+        var texture = new THREE.VideoTexture(video);
 
         var customMaterial = new THREE.ShaderMaterial({
             uniforms: {
+                resolution: {
+                    type: "v2",
+                    value: new THREE.Vector2(pw, ph)
+                },
+                gridParam: {
+                    type: "v2",
+                    value: new THREE.Vector2(0.005, 0.001)
+                },
                 gridColor: {
                     type: "c",
-                    value: new THREE.Color(0xFAFAD2)
+                    value: new THREE.Color(0x000000)
                 },
                 mTexture: {
-                    value: new THREE.TextureLoader().load(mask)
+                    value: texture
                 },
                 repeat: {
                     type: "v2",
@@ -120,69 +168,74 @@ export default class LedScene extends BaseScene {
                 `,
             fragmentShader:
                 `
+                uniform vec2 resolution;
+                uniform vec3 gridParam;
                 uniform vec3 gridColor;
                 uniform sampler2D mTexture;
                 uniform vec2 repeat;
                 uniform float opacity;
                 varying vec2 vUv;
 
-                float random (vec2 st) {
-                    return fract(sin(dot(st.xy,vec2(12.9898,78.233)))*43758.5453123);
-                }
-
                 vec4 drawGrid(vec2 pos,float grid,float line,vec3 color){
                     float d = grid + line;
                     float t = 0.0;
-                    if( mod(pos.x,d) < grid && mod(pos.y,d) < grid){
+                    float scale = resolution.x / resolution.y;
+                    if( mod(pos.x,d) < grid && mod(pos.y,d*scale) < grid*scale){
                           t = 0.0;
                     }else{
                           t = 1.0;
                     }
 
-                    return vec4(color,1.0 - t);
+                    return vec4(color,1.0-t);
                 }
 
                 void main() {
-                vec4 layer = drawGrid(vUv,0.005,0.008,gridColor);
-
-                vec4 mask = texture2D(mTexture,vUv);
-                vec2 st = (vUv + repeat).xy * 50.0;
-
-                vec2 ipos = floor(st);  // get the integer coords
-                vec2 fpos = fract(st);  // get the fractional coords
-    
-                vec3 color = vec3(random( ipos ));
-  
-                gl_FragColor = vec4(layer.rgb,layer.a*color.r*opacity*(1.0-mask.r));
+                vec4 mask = drawGrid(vUv,gridParam.x,gridParam.y,gridColor);
+                vec4 layer = texture2D(mTexture,vUv);
+                vec3 dst = mix(mask.rgb,layer.rgb,mask.a);
+                gl_FragColor = vec4(dst,opacity);
                 }
                 `,
             transparent: true,
         });
 
         this.mat = customMaterial;
+        this.setGUI(this.mat);
 
         this.plane = new THREE.Mesh(pg, customMaterial)
         this.plane.position.set(0, 0, 0)
-        //this.plane.rotateX(0)
         this.scene.add(this.plane);
 
         enableLight(this.plane, true);
+    }
 
-        setInterval(() => {
-            _this.mat.uniforms.repeat.value.x += Math.random(1) - 0.5;
-            _this.mat.uniforms.repeat.value.y += Math.random(1) - 0.5;
-        }, 100);
+    setGUI(mat) {
+        let datGui = GUIThree.getGUI();
+        let folder = datGui.addFolder("参数");
 
-        let folder = GUIThree.getGUI().addFolder("face");
-        addColor();
-        function addColor() {
-            let params = {
-                color: customMaterial.uniforms.gridColor.value.getHex(),
-            }
-            folder.addColor(params, "color").onChange((e) => {
-                customMaterial.uniforms.gridColor.value = new THREE.Color(e);
-            });
+        let params = {
+            '格子大小': mat.uniforms.gridParam.value.x,
+            '缝隙大小': mat.uniforms.gridParam.value.y,
+            '透明度': mat.uniforms.opacity.value,
+            '颜色': mat.uniforms.gridColor.value.getHex(),
         }
+
+        folder.add(params, "格子大小", 0.0001, 0.01).step(0.0001).onChange((e) => {
+            mat.uniforms.gridParam.value.x = parseFloat(e);
+        })
+
+        folder.add(params, "缝隙大小", 0.0001, 0.01).step(0.0001).onChange((e) => {
+            mat.uniforms.gridParam.value.y = parseFloat(e);
+        })
+
+        folder.add(params, "透明度", 0, 1).step(0.01).onChange((e) => {
+            mat.uniforms.opacity.value = parseFloat(e);
+        })
+
+        folder.addColor(params, "颜色").onChange((e) => {
+            mat.uniforms.gridColor.value = new THREE.Color(e);
+        });
+        folder.open();
     }
 
     dispose() {

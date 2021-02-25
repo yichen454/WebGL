@@ -163,6 +163,10 @@ export default class MouthEntity {
                     type: "c",
                     value: new THREE.Color(0xFF0000)
                 },
+                offset: {
+                    type: 'f',
+                    value: 0.0
+                },
                 mixed_coefficient: {
                     type: 'f',
                     value: 6.18
@@ -180,11 +184,12 @@ export default class MouthEntity {
                 'attribute vec2 uv2;',
                 'varying vec2 vUv;',
                 'varying vec2 vUv2;',
+                'uniform float offset;',
 
                 'void main() {',
                 'vUv = uv;',
                 'vUv2 = uv2;',
-                'gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);',
+                'gl_Position = projectionMatrix * modelViewMatrix * vec4(vec3(position.x+ offset,position.y+ offset,position.z), 1.0);',
                 '}'
             ].join("\n"),
             fragmentShader: [
@@ -241,6 +246,7 @@ export default class MouthEntity {
                 'float grayColor = dot(lipstick_color_0, rgb_to_y);',
                 'vec3 dst_color = source.rgb;',
                 'vec4 medianColor = texture2D(lipstick_median_texture, vUv);',
+
                 'float alpha = medianColor.a;',
                 'vec4 baseColor = medianColor + 1.0 * (1.0 - medianColor.a);',
                 'baseColor.rgb = 1.0 - (1.0 - baseColor.rgb) * (1.0 - lipstick_color_0);',
@@ -259,11 +265,12 @@ export default class MouthEntity {
                 'vec3 hsl = RGBtoHSL(dst_color);',
                 'hsl.z = min(hsl.z + shimmer_weight * luma_weight * alpha, 1.0);',
                 'dst_color = HSLtoRGB(hsl);',
-
-                'gl_FragColor = vec4(dst_color, alpha);',
+                'dst_color = mix(source.rgb,dst_color,alpha);',
+                'gl_FragColor = vec4(dst_color, 1.0);',
+                //'gl_FragColor = source;',
                 '}'
             ].join("\n"),
-            transparent: true,
+            transparent: false,
         })
 
         return material;
@@ -284,6 +291,7 @@ export default class MouthEntity {
             '混合系数': mat.uniforms.mixed_coefficient.value,
             '亮区阈值': mat.uniforms.force_bright_threshold.value,
             '微光': mat.uniforms.shimmer_normalize_factor.value,
+            // '偏移': mat.uniforms.offset.value,
         }
         folder.addColor(params, "颜色").onChange((e) => {
             mat.uniforms.lipstick_color_0.value = new THREE.Color(e);
@@ -300,6 +308,12 @@ export default class MouthEntity {
         folder.add(params, "微光", 0, 1).step(0.01).onChange((e) => {
             mat.uniforms.shimmer_normalize_factor.value = parseFloat(e);
         })
+
+
+        // folder.add(params, "偏移", 0, 1).step(0.01).onChange((e) => {
+        //     mat.uniforms.offset.value = parseFloat(e);
+        // })
+        folder.open();
     }
 }
 
