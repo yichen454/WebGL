@@ -8,6 +8,9 @@ import FaceScene from '../demo/BeautyMakeup/FaceScene'
 import ReflectScene from '../demo/Reflect/ReflectScene'
 import LedScene from '../demo/Led/LedScene'
 import HeatmapScene from '../demo/Heatmap/HeatmapScene'
+import ScanScene from '../demo/Scan/ScanScene'
+import RainScene from '../demo/Rain/RainScene'
+import HologramScene from '../demo/Hologram/Hologram'
 
 let renderer,
     clock = new THREE.Clock(true),
@@ -18,7 +21,7 @@ let renderSize = {
 };
 let stopRender = false; //停止渲染
 let destroyRender = false;
-let sences = {};
+let scenes = {};
 
 let _this;
 
@@ -39,43 +42,61 @@ class Renderer {
         let query = _.getQueryStringByName('scene')
         switch (query) {
             case 'carScene':
-                sences["carScene"] = new CarScene({
+                scenes["carScene"] = new CarScene({
                     renderer: renderer,
                     renderSize: renderSize
                 })
                 break;
             case 'geoScene':
-                sences["geoScene"] = new GeoScene({
+                scenes["geoScene"] = new GeoScene({
                     renderer: renderer,
                     renderSize: renderSize
                 })
                 break;
             case 'beautyScene':
-                sences["beautyScene"] = new BeautyScene({
+                scenes["beautyScene"] = new BeautyScene({
                     renderer: renderer,
                     renderSize: renderSize
                 })
                 break;
             case 'faceScene':
-                sences["faceScene"] = new FaceScene({
+                scenes["faceScene"] = new FaceScene({
                     renderer: renderer,
                     renderSize: renderSize
                 })
                 break;
             case 'reflectScene':
-                sences["reflectScene"] = new ReflectScene({
+                scenes["reflectScene"] = new ReflectScene({
                     renderer: renderer,
                     renderSize: renderSize
                 })
                 break;
             case 'ledScene':
-                sences["ledScene"] = new LedScene({
+                scenes["ledScene"] = new LedScene({
                     renderer: renderer,
                     renderSize: renderSize
                 })
                 break;
             case 'heatmapScene':
-                sences["heatmapScene"] = new HeatmapScene({
+                scenes["heatmapScene"] = new HeatmapScene({
+                    renderer: renderer,
+                    renderSize: renderSize
+                })
+                break;
+            case 'scanScene':
+                scenes["scanScene"] = new ScanScene({
+                    renderer: renderer,
+                    renderSize: renderSize
+                })
+                break;
+            case 'rainScene':
+                scenes['rainScene'] = new RainScene({
+                    renderer: renderer,
+                    renderSize: renderSize
+                })
+                break;
+            case 'hologramScene':
+                scenes['hologramScene'] = new HologramScene({
                     renderer: renderer,
                     renderSize: renderSize
                 })
@@ -114,9 +135,9 @@ class Renderer {
         if (!stopRender) {
             let delta = clock.getDelta();
             stats.update();
-            for (const key in sences) {
-                if (sences.hasOwnProperty(key)) {
-                    const element = sences[key];
+            for (const key in scenes) {
+                if (scenes.hasOwnProperty(key)) {
+                    const element = scenes[key];
                     if (!element.isHidden) element.update(delta);
                 }
             }
@@ -143,6 +164,7 @@ class Renderer {
         EventBus.removeListener(EventBus.Event.UIMessage, this.onUIMessage);
     }
 
+
     _ResizeSet() {
         window.onresize = () => {
             let width, height;
@@ -150,9 +172,9 @@ class Renderer {
             height = this.container.clientHeight;
 
             renderer.setSize(width, height);
-            for (const key in sences) {
-                if (sences.hasOwnProperty(key)) {
-                    const element = sences[key];
+            for (const key in scenes) {
+                if (scenes.hasOwnProperty(key)) {
+                    const element = scenes[key];
                     element.resize(width, height);
                 }
             }

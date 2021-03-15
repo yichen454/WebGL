@@ -68,6 +68,8 @@ export default class ReflectScene extends BaseScene {
     _InitGameObject() {
         let _this = this;
 
+        
+
         var loader = new GLTFLoader();
         loader.load('./model/airship.glb', function (gltf) {
             //loader.load('./model/lamborghini.glb', function (gltf) {

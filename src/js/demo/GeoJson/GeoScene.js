@@ -9,6 +9,7 @@ import { geoMercator } from 'd3-geo'
 import GUIThree from '../../utils/GUIThree'
 
 import BaseScene from '../../graphics/BaseScene'
+import test_tex from '../BeautyMakeup/face/face1.jpg'
 
 
 let materials = {};
@@ -121,15 +122,16 @@ export default class GeoScene extends BaseScene {
         this.map = new THREE.Object3D();
         // 墨卡托投影转换
         const projection = geoMercator().center([104.0, 37.5]).scale(36).translate([0, 0]);
-
+        let tex = new THREE.TextureLoader().load(test_tex);
         let thickness = 2;
 
-        const material_front = new THREE.MeshPhysicalMaterial({
-            color: 0x02A1E2,
-            transparent: true,
-            opacity: 0.6,
-            side: THREE.DoubleSide,
-            depthWrite: true
+        const material_front = new THREE.MeshBasicMaterial({
+            // color: 0x02A1E2,
+            // transparent: true,
+            // opacity: 0.6,
+            // side: THREE.DoubleSide,
+            // depthWrite: true
+            map: tex
         });
         GUIThree.setTarget(material_front, 'material_front');
         const material_side = new THREE.MeshPhysicalMaterial({
@@ -174,11 +176,12 @@ export default class GeoScene extends BaseScene {
                         bevelEnabled: false
                     });
                     // geometry.mergeVertices()
-                    // geometry.computeBoundingBox()
-                    // const max = geometry.boundingBox.max;
-                    // const min = geometry.boundingBox.min;
-                    // const offset = new THREE.Vector2(0 - min.x, 0 - min.y);
-                    // const range = new THREE.Vector2(max.x - min.x, max.y - min.y);
+                    geometry.computeBoundingBox()
+                    const max = geometry.boundingBox.max;
+                    const min = geometry.boundingBox.min;
+                    const offset = new THREE.Vector2(0 - min.x, 0 - min.y);
+                    const range = new THREE.Vector2(max.x - min.x, max.y - min.y);
+                    console.log(offset, range);
                     // const faces = geometry.faces;
                     // geometry.faceVertexUvs[0] = [];
 
@@ -201,9 +204,9 @@ export default class GeoScene extends BaseScene {
 
                     province.add(mesh0);
                     province.add(mesh1);
-                    enableLight(mesh1, true);
+                    // enableLight(mesh1, true);
                     province.add(line);
-                    enableLight(line, true);
+                    // enableLight(line, true);
                 })
 
             })

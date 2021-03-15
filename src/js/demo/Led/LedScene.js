@@ -22,7 +22,7 @@ export default class LedScene extends BaseScene {
         super(porps)
         document.title = 'webgl LED屏幕';
         if (window['_czc']) {
-            _czc.push(["_trackEvent", 'webgl', '进入', 'ReflectScene'])
+            _czc.push(["_trackEvent", 'webgl', '进入', 'LedScene'])
         }
     }
 
