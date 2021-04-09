@@ -1,10 +1,26 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { ReflectorRTT } from 'three/examples/jsm/objects/ReflectorRTT.js'
+import {
+    NodeFrame,
+    ExpressionNode,
+    PhongNodeMaterial,
+    MathNode,
+    OperatorNode,
+    TextureNode,
+    BlurNode,
+    FloatNode,
+    ReflectorNode,
+    SwitchNode,
+    NormalMapNode,
+    Vector2Node
+} from 'three/examples/jsm/nodes/Nodes.js';
 
 import BaseScene from '../../graphics/BaseScene'
 import EventBus from '../../eventBus'
 import GUIThree from '../../utils/GUIThree'
+
 
 export default class ReflectScene extends BaseScene {
 
@@ -49,7 +65,7 @@ export default class ReflectScene extends BaseScene {
         cubeTextureLoader.setPath('./textures/cubemap/starry/');
 
         let cubeTexture = cubeTextureLoader.load(['posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg']);
-        this.scene.background = cubeTexture;
+        //this.scene.background = cubeTexture;
         this.scene.environment = cubeTexture;
     }
 
@@ -61,14 +77,12 @@ export default class ReflectScene extends BaseScene {
         var axisHelper = new THREE.AxesHelper(100);
         this.scene.add(axisHelper);
 
-        var grid = new THREE.GridHelper(200, 200, 0x000000, 0x000000);
-        this.scene.add(grid);
+        // var grid = new THREE.GridHelper(200, 200, 0x000000, 0x000000);
+        // this.scene.add(grid);
     }
 
     _InitGameObject() {
         let _this = this;
-
-        
 
         var loader = new GLTFLoader();
         loader.load('./model/airship.glb', function (gltf) {
@@ -83,9 +97,33 @@ export default class ReflectScene extends BaseScene {
             _this.scene.add(model);
         })
 
-        //let plane = new THREE.Plane
+        const planeGeo = new THREE.PlaneGeometry(100.1, 100.1);
+        const geometry = new THREE.PlaneGeometry(100, 100);
+        const groundMirror = new ReflectorRTT(geometry, {
+            clipBias: 0.003,
+            textureWidth: this.renderSize.w * window.devicePixelRatio,
+            textureHeight: this.renderSize.h * window.devicePixelRatio
+        });
+        const mirror = new ReflectorNode(groundMirror);
 
+        const blurMirror = new BlurNode(mirror);
+        blurMirror.size = new THREE.Vector2(
+            this.renderSize.w * window.devicePixelRatio,
+            this.renderSize.h * window.devicePixelRatio
+        );
 
+        blurMirror.uv = new ExpressionNode('projCoord.xyz / projCoord.q', 'vec3');
+        blurMirror.uv.keywords['projCoord'] = mirror.uv;
+        blurMirror.radius = new Vector2Node(1000, 1000);
+
+        const groundMirrorMaterial = new PhongNodeMaterial();
+        groundMirrorMaterial.environment = mirror; // or add "mirror" variable to disable blur
+
+        const mirrorMesh = new THREE.Mesh(planeGeo, groundMirrorMaterial);
+        groundMirror.add(mirrorMesh);
+        groundMirror.rotateX(- Math.PI / 2);
+        groundMirror.position.set(0, -2, 0);
+        this.scene.add(groundMirror);
     }
 
     dispose() {

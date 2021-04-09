@@ -114,7 +114,7 @@ export default class HologramScene extends BaseScene {
         let position = new Nodes.OperatorNode(localPosition, op, Nodes.OperatorNode.ADD);
         mat.position = position;
 
-        console.log(mat);
+        //console.log(mat);
         const geometry = new THREE.TorusKnotBufferGeometry(0.4, 0.15, 220, 60);
         const mesh = new THREE.Mesh(geometry, mat);
         this.scene.add(mesh);

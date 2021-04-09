@@ -11,6 +11,8 @@ import HeatmapScene from '../demo/Heatmap/HeatmapScene'
 import ScanScene from '../demo/Scan/ScanScene'
 import RainScene from '../demo/Rain/RainScene'
 import HologramScene from '../demo/Hologram/Hologram'
+import StencilDepthScene from '../demo/StencilDepth/StencilDepthScene'
+import DissolveScene from '../demo/Dissolve/DissolveScene'
 
 let renderer,
     clock = new THREE.Clock(true),
@@ -97,6 +99,18 @@ class Renderer {
                 break;
             case 'hologramScene':
                 scenes['hologramScene'] = new HologramScene({
+                    renderer: renderer,
+                    renderSize: renderSize
+                })
+                break;
+            case 'stencilDepthScene':
+                scenes["stencilDepthScene"] = new StencilDepthScene({
+                    renderer: renderer,
+                    renderSize: renderSize
+                })
+                break;
+            case 'dissolveScene':
+                scenes["dissolveScene"] = new DissolveScene({
                     renderer: renderer,
                     renderSize: renderSize
                 })
