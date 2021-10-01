@@ -9,6 +9,7 @@ import { Noise3DNode } from '../../node/Noise3DNode';
 import gradientMap from './Gradient.png';
 import { MathUtils } from 'three';
 
+//discard
 export default class DissolveScene extends BaseScene {
 
     constructor(porps) {
@@ -67,14 +68,11 @@ export default class DissolveScene extends BaseScene {
         this.canvas = canvas;
     }
 
-    _InitPass() {
-
-    }
+    _InitPass() { }
 
     _InitPhysics() { }
 
-    _InitBackGround() {
-    }
+    _InitBackGround() { }
 
     _InitLight() {
         var hemiLight = new THREE.HemisphereLight(0x7c849b, 0xd7cbb1, 0.94);
